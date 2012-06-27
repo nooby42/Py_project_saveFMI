@@ -8,12 +8,24 @@ from pygame.locals import *
 class Game(object):
 
     def __init__(self, screen, enemy, enemy_dead, field, sound):
+        """ Initializes Game object.
+
+            Keyword arguments:
+            screen -- pygame screen
+            enemy -- image of the enemy
+            enemy_dead -- image of killed enemy
+            field -- background image
+            sound -- wav sound file
+
+        """
         self.screen = screen
         self.setup_initial_variables(sound)
         self.setup_images(enemy, enemy_dead, field)
         self.setup_enemies()
 
     def setup_initial_variables(self, sound):
+        """ Loads pygame modules,creates clock object,loads sound file,
+            removes mouse cursor"""
         pygame.font.init()
         pygame.mixer.init()
         self.running = 1
@@ -27,6 +39,12 @@ class Game(object):
         self.sound_smash = pygame.mixer.Sound('smash.wav')
 
     def setup_images(self, enemy, enemy_dead, field):
+        """ Loads images and set color that wont be displayed.
+            Keyword arguments:
+            enemy -- image of the enemy
+            enemy_dead -- image of killed enemy
+            field -- backgroun image
+        """
         self.enemy_image = pygame.image.load(enemy).convert()
         self.enemy_image.set_colorkey((180, 180, 180))
         self.cursor = pygame.image.load("capture.png").convert()
@@ -38,6 +56,7 @@ class Game(object):
         self.bang.set_colorkey((255, 255, 255))
 
     def setup_enemies(self):
+        """ Creates Enemy objects and adds them to a list."""
         self.enemy1 = enemy.Enemy(160, 140, 1000, 3000,
                                   False, self.enemy_image)
         self.enemy2 = enemy.Enemy(351, 140, 2500, 4500,
@@ -65,6 +84,12 @@ class Game(object):
                         self.enemy8, self.enemy9, self.enemy10, self.enemy11]
 
     def strike_checker(self, mouse_click_coordinates, x_of_image, y_of_image):
+        """ Check if a mouse click is in the area of an image.
+            Keyword arguments:
+            mouse_click_coordinates -- tuple containing x and y of the click
+            x_of_image -- x coordinate of the image
+            y_of_image -- y coordinate of the image
+        """
         if (mouse_click_coordinates[0] > x_of_image
             and mouse_click_coordinates[0] < x_of_image + 50
             and mouse_click_coordinates[1] > y_of_image
@@ -72,28 +97,52 @@ class Game(object):
             return True
 
     def get_score(self):
+        """ Opens shelve database file and returns the saved score in it"""
         highscore = shelve.open('highscore.db')
         result = highscore.get('score')
         highscore.close()
         return result
 
     def save_score(self):
+        """ If current score is higher than one saved in the shelve db
+            current score is saved in the shelve db
+        """
         if self.hits > self.get_score():
             highscore = shelve.open('highscore.db')
             highscore["score"] = self.hits
             highscore.close()
 
     def clear_screen(self):
+        """ Displays only the backgroun image"""
         self.screen.blit(self.background, (0, 0))
 
     def paint_enemy(self, enemy_image, x, y):
+        """ Displays the enemy image
+            Keyword arguments:
+            enemy_image -- image of the enemy
+            x -- x coordinate of the image
+            y -- y coordinate of the image
+        """
         self.screen.blit(enemy_image, (x, y))
 
     def time_checker(self, time, born_time, death_time):
+        """ Check if current time is in a particular bounds
+            Keyword arguments:
+            time -- passed time in ms
+            born_time -- left bound of the interval
+            death_time -- right bound of the interval
+        """
         if(time > born_time and time < death_time):
             return True
 
     def show_text(self, font_name, text, x, y):
+        """ Loads font if unable loads default font. Displays the text
+            Kyword arguments:
+            font_name -- ttf file
+            text -- text that will be displayed
+            x -- x coordinate of the text
+            y -- y coordinate of the text
+        """
         try:
             font = pygame.font.Font(font_name, 25)
         except Exception:
@@ -102,10 +151,12 @@ class Game(object):
         self.screen.blit(output, (x, y))
 
     def draw_mouse(self):
+        """ Displays image instead of mouse cursor"""
         mouse_cords = pygame.mouse.get_pos()
         self.screen.blit(self.cursor, (mouse_cords[0], mouse_cords[1]))
 
     def main(self):
+        """ Renders game scene listens for events"""
         while self.running:
             if pygame.event.peek():
                 if not pygame.mixer.get_busy():

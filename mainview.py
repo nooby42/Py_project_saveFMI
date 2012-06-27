@@ -8,6 +8,9 @@ from pygame.locals import *
 class Chooser(object):
 
     def __init__(self, screen):
+        """ Initializes Chooser object, loads images,
+            loads pygame modules,loads sound, creates clock object.
+        """
         self.clock = pygame.time.Clock()
         self.running = 1
         self.screen = screen
@@ -19,6 +22,13 @@ class Chooser(object):
         self.sound = pygame.mixer.Sound("test.wav")
 
     def show_text(self, font_name, text, x, y):
+        """ Loads font if unable loads default font. Displays the text
+            Kyword arguments:
+            font_name -- ttf file
+            text -- text that will be displayed
+            x -- x coordinate of the text
+            y -- y coordinate of the text
+        """
         try:
             font = pygame.font.Font(font_name, 25)
         except Exception:
@@ -27,6 +37,8 @@ class Chooser(object):
         self.screen.blit(output, (x, y))
 
     def main(self):
+        """ Renders the initial scene of the game,
+            listens for events and handle them."""
         while self.running:
             if pygame.event.peek():
                 event = pygame.event.poll()
