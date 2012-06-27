@@ -103,13 +103,16 @@ class Game(object):
         highscore.close()
         return result
 
-    def save_score(self):
+    def save_score(self, strike):
         """ If current score is higher than one saved in the shelve db
             current score is saved in the shelve db
+            
+            Keywords arguments:
+            strike -- current number of hits
         """
-        if self.hits > self.get_score():
+        if strike > self.get_score():
             highscore = shelve.open('highscore.db')
-            highscore["score"] = self.hits
+            highscore["score"] = strike
             highscore.close()
 
     def clear_screen(self):
@@ -165,8 +168,7 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     pygame.mouse.set_visible(1)
                     pygame.mixer.stop()
-                    self.save_score()
-                    score = self.get_score()
+                    self.save_score(self.hits)
                     self.running = 0
                 self.screen.fill((0, 0, 0))
                 self.clear_screen()
