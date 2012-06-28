@@ -28,13 +28,13 @@ class Game(object):
             removes mouse cursor"""
         pygame.font.init()
         pygame.mixer.init()
+        pygame.mouse.set_visible(0)
         self.running = 1
         self.pressed_down = False
         self.strike = False
         self.time = 0
         self.hits = 0
         self.clock = pygame.time.Clock()
-        pygame.mouse.set_visible(0)
         self.sound = pygame.mixer.Sound(sound)
         self.sound_smash = pygame.mixer.Sound('smash.wav')
 
@@ -95,6 +95,8 @@ class Game(object):
             and mouse_click_coordinates[1] > y_of_image
             and mouse_click_coordinates[1] < y_of_image + 70):
             return True
+        else:
+            return False
 
     def get_score(self):
         """ Opens shelve database file and returns the saved score in it"""
@@ -106,7 +108,6 @@ class Game(object):
     def save_score(self, strike):
         """ If current score is higher than one saved in the shelve db
             current score is saved in the shelve db
-            
             Keywords arguments:
             strike -- current number of hits
         """
@@ -137,6 +138,8 @@ class Game(object):
         """
         if(time > born_time and time < death_time):
             return True
+        else:
+            return False
 
     def show_text(self, font_name, text, x, y):
         """ Loads font if unable loads default font. Displays the text
@@ -158,6 +161,13 @@ class Game(object):
         mouse_cords = pygame.mouse.get_pos()
         self.screen.blit(self.cursor, (mouse_cords[0], mouse_cords[1]))
 
+    def exit_actions(self):
+        """ Actions done on exit """
+        pygame.mouse.set_visible(1)
+        pygame.mixer.stop()
+        self.save_score(self.hits)
+        self.running = 0
+
     def main(self):
         """ Renders game scene listens for events"""
         while self.running:
@@ -166,10 +176,10 @@ class Game(object):
                     self.sound.play()
                 event = pygame.event.poll()
                 if event.type == pygame.QUIT:
-                    pygame.mouse.set_visible(1)
-                    pygame.mixer.stop()
-                    self.save_score(self.hits)
-                    self.running = 0
+                    self.exit_actions()
+                if (event.type == KEYUP) or (event.type == KEYDOWN):
+                    if (event.key == K_ESCAPE):
+                        self.exit_actions()
                 self.screen.fill((0, 0, 0))
                 self.clear_screen()
                 if event.type == MOUSEBUTTONDOWN:

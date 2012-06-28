@@ -44,7 +44,6 @@ class Chooser(object):
                 event = pygame.event.poll()
                 if event.type == pygame.QUIT:
                     self.running = 0
-
                 self.screen.fill((0, 0, 0))
                 self.screen.blit(self.bg, (0, 0))
                 self.screen.blit(self.azis, (200, 250))
